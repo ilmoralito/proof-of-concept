@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <form id="form">
+        <p>
+            <label for="startDate">Fecha inicio</label>
+            <input id="startDate">
+        </p>
+
+        <p>
+            <label for="endDate">Fecha inicio</label>
+            <input id="endDate">
+        </p>
+
+        <p>
+            <button type="submit">Send</button>
+        </p>
+    </form>
+
+    <div id="data"></div>
+
+    <script>
+        const form = document.querySelector('#form');
+
+        form.addEventListener('submit', handleSubmit);
+
+        function handleSubmit(event) {
+            event.preventDefault();
+
+            const startDate = document.querySelector('#startDate').value;
+            const endDate = document.querySelector('#endDate').value;
+            const params = `startDate=${startDate}&endDate=${endDate}`;
+
+            fetch(`http://localhost:8000/app.php?${params}`)
+                .then(response => response.json())
+                .then(json => {
+                    render(json);
+                });
+        }
+
+        function render(dataset) {
+            const rows = getRows(dataset);
+
+            const table = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Fecha inicio</th>
+                            <th>Fecha fin</th>
+                            <th>Tiempo</th>
+                            <th>Distancia</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        ${rows}
+                    </tbody>
+                </table>`;
+
+            document.querySelector('#data').innerHTML = table;
+        }
+
+        function getRows(dataset) {
+            const rows = dataset.map(data => {
+                return `
+                    <tr>
+                        <td>${data.startDate}</td>
+                        <td>${data.endDate}</td>
+                        <td>${data.time}</td>
+                        <td>${data.distance}</td>
+                    </tr>`
+            }).join('');
+
+            return rows;
+        }
+    </script>
+</body>
+</html>

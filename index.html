@@ -37,7 +37,7 @@
             const endDate = document.querySelector('#endDate').value;
             const params = `startDate=${startDate}&endDate=${endDate}`;
 
-            fetch(`http://localhost:8000/app.php?${params}`)
+            fetch(`https://demozilla.herokuapp.com/app.php?${params}`)
                 .then(response => response.json())
                 .then(json => {
                     render(json);

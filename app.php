@@ -1,28 +1,36 @@
 <?php
 
-function loadDataset()
+class App
 {
-    $string = file_get_contents('./dataset.json');
-    $dataset = json_decode($string, true);
+    private $dataset;
 
-    return $dataset;
+    public function __construct()
+    {
+        $dataset = file_get_contents('./dataset.json');
+        $dataset = json_encode($dataset, true);
+
+        $this->dataset = $dataset;
+    }
+
+    public function filter(string $startDate, string $endDate) : array
+    {
+        $results = array_filter($this->dataset, function($data) use ($startDate, $endDate) {
+            $startDate = strtotime($startDate);
+            $endDate = strtotime($endDate);
+
+            return strtotime($data['startDate']) >= $startDate && strtotime($data['endDate']) <= $endDate;
+        });
+
+        return $results;
+    }
 }
 
-function filter($startDate, $endDate)
-{
-    $dataset = loadDataset();
+$startDate = $_GET['startDate'];
+$endDate = $_GET['endDate'];
 
-    $result = array_filter($dataset, function($data) use ($startDate, $endDate) {
-        $startDate = strtotime($startDate);
-        $endDate = strtotime($endDate);
+$app = new App();
 
-        return strtotime($data['startDate']) >= $startDate && strtotime($data['endDate']) <= $endDate;
-    });
-
-    return $result;
-}
-
-$json = filter($_GET['startDate'], $_GET['endDate']);
+$json = $app->filter($startDate, $endDate);
 
 header('Content-type: application/json');
 echo json_encode($json);
